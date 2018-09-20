@@ -1,5 +1,6 @@
 export interface IJira {
   search(params: { jql: string; maxResults?: number }): Promise<IIssues>;
+  getIssueByUrl(url: string): Promise<IIssue>;
   getStatuses(): Promise<IStatus[]>;
   getProjects(): Promise<IProject[]>;
   getAssignees(param: { project: string; maxResults?: number }): Promise<IAssignee[]>;
@@ -27,9 +28,21 @@ export interface IIssues {
 export interface IIssue {
   id: string;
   key: string;
+  renderedFields?: {
+    description?: string;
+  };
   fields: {
     summary: string;
     description?: string;
+    labels: string[],
+    issuetype: {
+      name: string;
+      iconUrl: string;
+    };
+    priority: {
+      name: string;
+      iconUrl: string;
+    };
     status: {
       name: string;
     };

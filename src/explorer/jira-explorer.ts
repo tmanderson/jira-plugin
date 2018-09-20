@@ -32,8 +32,8 @@ export class JiraExplorer implements vscode.TreeDataProvider<IssueItem> {
         issue =>
           new IssueItem(issue, {
             command: 'jira-plugin.openIssueCommand',
-            title: 'Open issue in the browser',
-            arguments: [`${issue.key}`]
+            title: 'View issue',
+            arguments: [issue]
           })
       );
       // add in the firt possition 'filter-info-item' and then the 'divider-item'

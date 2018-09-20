@@ -1,7 +1,7 @@
 const jiraClient = require('jira-connector');
 import { getConfigurationByKey, getGlobalStateConfiguration } from '../shared/configuration';
 import { CONFIG, CREDENTIALS_SEPARATOR } from '../shared/constants';
-import { IAddComment, IAddCommentResponse, IAddWorkLog, IAssignee, IIssues, IJira, IProject, ISetTransition, IStatus, ITransitions } from './api.model';
+import { IAddComment, IAddCommentResponse, IAddWorkLog, IAssignee, IIssue, IIssues, IJira, IProject, ISetTransition, IStatus, ITransitions } from './api.model';
 
 export class Jira implements IJira {
   jiraInstance: any;
@@ -19,6 +19,7 @@ export class Jira implements IJira {
       }
 
       const [username, password] = getGlobalStateConfiguration().split(CREDENTIALS_SEPARATOR);
+      
       this.jiraInstance = new jiraClient({
         host: baseUrl,
         port,
@@ -43,7 +44,23 @@ export class Jira implements IJira {
   }
 
   async search(params: { jql: string; maxResults?: number }): Promise<IIssues> {
-    return await this.jiraInstance.search.search(params);
+    return await this.jiraInstance.search.search({
+      ...params,
+      expand: ['renderedFields']
+    });
+  }
+
+  async getIssueByUrl(url: string): Promise<IIssue> {
+    const key: string = url.split('/').pop() || '';
+    
+    if (!key) {
+      return Promise.reject(new Error('Invalid Jira Ticket URL'));
+    }
+
+    return await this.jiraInstance.issue.getIssue({
+      issueKey: key,
+      expand: ['renderedFields']
+    });
   }
 
   async getStatuses(): Promise<IStatus[]> {

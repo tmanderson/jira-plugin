@@ -28,6 +28,7 @@ export const activate = async (context: vscode.ExtensionContext): Promise<void> 
   state.context = context;
   state.channel = channel;
   state.statusBar = statusBar;
+  
   const jiraExplorer = new JiraExplorer();
   vscode.window.registerTreeDataProvider('jiraExplorer', jiraExplorer);
   state.jiraExplorer = jiraExplorer;
@@ -38,7 +39,7 @@ export const activate = async (context: vscode.ExtensionContext): Promise<void> 
     new ChangeIssueStatusCommand(),
     new ChangeIssueAssigneeCommand(),
     new IssueAddCommentCommand(),
-    new OpenIssueCommand(),
+    new OpenIssueCommand(context),
     new SetWorkingIssueCommand(),
     new IssueAddWorklogCommand()
   ];

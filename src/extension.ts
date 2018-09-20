@@ -7,6 +7,7 @@ import { OpenIssueCommand } from './commands/open-issue';
 import { SetWorkingIssueCommand } from './commands/set-working-issue';
 import { SetWorkingProjectCommand } from './commands/set-working-project';
 import { SetupCredentialsCommand } from './commands/setup-credentials';
+import { SetGroupingStrategyCommand } from './commands/set-grouping-strategy';
 import { JiraExplorer } from './explorer/jira-explorer';
 import { CONFIG_NAME, SEARCH_MODE } from './shared/constants';
 import { IssueLinkProvider } from './shared/document-link-provider';
@@ -41,12 +42,14 @@ export const activate = async (context: vscode.ExtensionContext): Promise<void> 
     new IssueAddCommentCommand(),
     new OpenIssueCommand(context),
     new SetWorkingIssueCommand(),
-    new IssueAddWorklogCommand()
+    new IssueAddWorklogCommand(),
+    new SetGroupingStrategyCommand()
   ];
 
   // register all commands
   context.subscriptions.push(vscode.commands.registerCommand('jira-plugin.refresh', () => selectIssue(SEARCH_MODE.REFRESH)));
   context.subscriptions.push(vscode.commands.registerCommand('jira-plugin.allIssuesCommand', () => selectIssue(SEARCH_MODE.ALL)));
+  context.subscriptions.push(vscode.commands.registerCommand('jira-plugin.myIssuesCommand', () => selectIssue(SEARCH_MODE.MINE)));
   context.subscriptions.push(vscode.commands.registerCommand('jira-plugin.myIssuesByStatusCommand', () => selectIssue(SEARCH_MODE.MY_STATUS)));
   context.subscriptions.push(vscode.commands.registerCommand('jira-plugin.issuesByStatusAssigneeCommand', () => selectIssue(SEARCH_MODE.STATUS_ASSIGNEE)));
   context.subscriptions.push(vscode.commands.registerCommand('jira-plugin.issuesByStatusCommand', () => selectIssue(SEARCH_MODE.STATUS)));

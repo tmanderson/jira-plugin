@@ -113,6 +113,11 @@
         "category": "Jira-plugin"
       },
       {
+        "command": "jira-plugin.setGroupingStrategy",
+        "title": "Group Issues By",
+        "category": "Jira-plugin"
+      },
+      {
         "command": "jira-plugin.allIssuesCommand",
         "title": "All issues",
         "category": "Jira-plugin"
@@ -125,6 +130,11 @@
       {
         "command": "jira-plugin.issuesByStatusCommand",
         "title": "Issues filtered by status",
+        "category": "Jira-plugin"
+      },
+      {
+        "command": "jira-plugin.myIssuesCommand",
+        "title": "My issues",
         "category": "Jira-plugin"
       },
       {

@@ -1,7 +1,7 @@
 const jiraClient = require('jira-connector');
 import { getConfigurationByKey, getGlobalStateConfiguration } from '../shared/configuration';
 import { CONFIG, CREDENTIALS_SEPARATOR } from '../shared/constants';
-import { IAddComment, IAddCommentResponse, IAddWorkLog, IAssignee, IIssue, IIssues, IJira, IProject, ISetTransition, IStatus, ITransitions } from './api.model';
+import { IAddComment, IAddCommentResponse, IAddWorkLog, IAssignee, IIssue, IIssues, IJira, IPriority, IProject, ISetTransition, IStatus, ITransitions } from './api.model';
 
 export class Jira implements IJira {
   jiraInstance: any;
@@ -50,17 +50,22 @@ export class Jira implements IJira {
     });
   }
 
-  async getIssueByUrl(url: string): Promise<IIssue> {
-    const key: string = url.split('/').pop() || '';
-    
-    if (!key) {
-      return Promise.reject(new Error('Invalid Jira Ticket URL'));
-    }
+  async getIssueById(id: string): Promise<IIssue> {
+    return await this.jiraInstance.issue.getIssue({
+      issueId: id,
+      expand: ['renderedFields']
+    });
+  }
 
+  async getIssueByKey(key: string): Promise<IIssue> {
     return await this.jiraInstance.issue.getIssue({
       issueKey: key,
       expand: ['renderedFields']
     });
+  }
+
+  async getPriorities(): Promise<IPriority[]> {
+    return await this.jiraInstance.priority.getAllPriorities();
   }
 
   async getStatuses(): Promise<IStatus[]> {
@@ -71,8 +76,12 @@ export class Jira implements IJira {
     return await this.jiraInstance.project.getAllProjects();
   }
 
-  async getAssignees(params: { project: string; maxResults?: number }): Promise<IAssignee[]> {
-    return await this.jiraInstance.user.searchAssignable(params);
+  async getAssignees(params: { project?: string; maxResults?: number }): Promise<IAssignee[]> {
+    if (typeof params.project === 'string') {
+      return await this.jiraInstance.user.searchAssignable(params);
+    } else {
+      return await this.jiraInstance.usermultiProjectSearchAssignable();
+    }
   }
 
   async getTransitions(issueKey: string): Promise<ITransitions> {

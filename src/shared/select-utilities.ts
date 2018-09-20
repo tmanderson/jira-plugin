@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { IAssignee, IIssue } from '../http/api.model';
+import { IAssignee, IIssue, ItemGroupingStrategy } from '../http/api.model';
 import BackPick from '../picks/back-pick';
 import NoWorkingIssuePick from '../picks/no-working-issue-pick';
 import UnassignedAssigneePick from '../picks/unassigned-assignee-pick';
@@ -69,6 +69,9 @@ const getFilterAndJQL = async (mode: string, project: string): Promise<string[]>
         return [`STATUS: ${status}`, `project = ${project} AND status = '${status}' ORDER BY updated DESC`];
       }
       break;
+    }
+    case SEARCH_MODE.MINE: {
+      return [`ASSIGNEE: you`, `project = ${project} AND assignee in (currentUser()) ORDER BY updated DESC`];
     }
     case SEARCH_MODE.MY_STATUS: {
       const status = await selectStatus();
@@ -222,6 +225,25 @@ export const selectTransition = async (issueKey: string): Promise<string | null 
     matchOnDescription: true
   });
   return selected ? selected.pickValue : undefined;
+};
+
+export const selectGroupingStrategy = async (): Promise<ItemGroupingStrategy | undefined> => {
+  const picks = [];
+  
+  for(let k in ItemGroupingStrategy) {
+    picks.push({
+      pickValue: ItemGroupingStrategy[k],
+      label: k,
+      description: ''
+    })
+  }
+  
+  const selected = await vscode.window.showQuickPick(picks, {
+    placeHolder: 'Select a property to group project issues by',
+    matchOnDescription: true
+  });
+
+  return selected ? <ItemGroupingStrategy> selected.pickValue : undefined;
 };
 
 const doubleSelection = async (firstSelection: Function, secondSelection: Function): Promise<{ firstChoise: string; secondChoise: string }> => {
